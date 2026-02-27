@@ -1,0 +1,9 @@
+[tool.ruff]
+target-version = "py321"
+
+exclude = [
+  "migrations",
+]
+
+select = ["E", "F", "DJ"]
+ignore = []
