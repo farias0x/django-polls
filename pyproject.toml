@@ -1,9 +1,10 @@
 [tool.ruff]
-target-version = "py312"
+line-length = 90
 
 exclude = [
   "migrations",
 ]
 
+[tool.ruff.lint]
 select = ["E", "F", "DJ"]
-ignore = []
+ignore = ["E501"]
