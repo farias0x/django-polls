@@ -1,9 +1,7 @@
 [tool.ruff]
 line-length = 90
 
-exclude = [
-  "migrations",
-]
+exclude = ["migrations"]
 
 [tool.ruff.lint]
 select = ["E", "F", "DJ"]
