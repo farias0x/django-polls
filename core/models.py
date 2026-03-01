@@ -16,7 +16,7 @@ class Question(models.Model):
         return self.question_text
 
     def get_total_votes(self):
-        return self.choice_set.aggregate(Sum("votes", default=0))["votes__sum"]
+        return self.choices.aggregate(Sum("votes", default=0))["votes__sum"]
 
     def was_published_recently(self):
         now = timezone.now()
