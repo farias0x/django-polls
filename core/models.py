@@ -1,4 +1,7 @@
+import datetime
+
 from django.db import models
+from django.utils import timezone
 from django.db.models import Sum
 
 
@@ -14,6 +17,11 @@ class Question(models.Model):
 
     def get_total_votes(self):
         return self.choice_set.aggregate(Sum("votes", default=0))["votes__sum"]
+
+    def was_published_recently(self):
+        now = timezone.now()
+        yesterday = now - datetime.timedelta(days=1)
+        return yesterday <= self.pub_date
 
 
 class Choice(models.Model):
@@ -34,4 +42,4 @@ class Choice(models.Model):
         if not total_votes:
             return "0%"
 
-        return f"{int((self.votes / total_votes) * 100)}%"
+        return int((self.votes / total_votes) * 100)
