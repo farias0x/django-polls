@@ -40,6 +40,6 @@ class Choice(models.Model):
     def get_percentage(self):
         total_votes = self.question.get_total_votes()
         if not total_votes:
-            return "0%"
+            return 0
 
         return int((self.votes / total_votes) * 100)
