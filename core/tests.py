@@ -1,7 +1,7 @@
 import datetime
 from django.utils import timezone
 from django.test import TestCase
-from .models import Question
+from .models import Question, Choice
 
 
 def create_question(question_text="", days=0):
@@ -36,7 +36,7 @@ class QuestionModelsTests(TestCase):
 
     def test_was_published_recently_with_old_question(self):
         """was_published_recently() returns False for questions published more than 1 day ago."""
-        time = timezone.now() - datetime.timedelta(days=1)
+        time = timezone.now() - datetime.timedelta(days=1, seconds=1)
         old_question = Question(pub_date=time)
         self.assertIs(old_question.was_published_recently(), False)
 
@@ -45,3 +45,32 @@ class QuestionModelsTests(TestCase):
         time = timezone.now() + datetime.timedelta(seconds=1)
         future_question = Question(pub_date=time)
         self.assertIs(future_question.was_published_recently(), False)
+
+
+class ChoiceModelsTests(TestCase):
+    def test_get_percentage_with_no_total_votes(self):
+        """get_percentage() returns 0 when the question has no choices."""
+        question = create_question()
+        choice = Choice.objects.create(question=question, choice_text="A", votes=0)
+        self.assertEqual(choice.get_percentage(), 0)
+
+    def test_get_percentage_with_one_choice_without_vote(self):
+        """get_percentage() returns 0 when this choice has no votes but other choices exist."""
+        question = create_question()
+        Choice.objects.create(question=question, choice_text="A", votes=7)
+        choice = Choice.objects.create(question=question, choice_text="B", votes=0)
+        self.assertEqual(choice.get_percentage(), 0)
+
+    def test_get_percentage_with_one_choice_with_vote(self):
+        """get_percentage() returns 100 when there's only one choice with votes."""
+        choice = Choice.objects.create(
+            question=create_question(), choice_text="", votes=7
+        )
+        self.assertEqual(choice.get_percentage(), 100)
+
+    def test_get_percentage_with_multiple_choices_with_vote(self):
+        """get_percentage() returns correct percentage when multiple choices have votes."""
+        question = create_question()
+        Choice.objects.create(question=question, choice_text="", votes=5)
+        choice = Choice.objects.create(question=question, choice_text="", votes=1)
+        self.assertEqual(choice.get_percentage(), 16)
